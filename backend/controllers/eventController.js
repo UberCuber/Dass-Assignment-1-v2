@@ -1,6 +1,6 @@
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const generateQRCode = require('../utils/qrCode');
 const { sendTicketEmail } = require('../utils/email');
 
@@ -274,7 +274,7 @@ const registerForEvent = async (req, res) => {
         }
 
         // Generate ticket
-        const ticketId = 'FEL-' + uuidv4().substring(0, 8).toUpperCase();
+        const ticketId = 'FEL-' + crypto.randomUUID().substring(0, 8).toUpperCase();
         const User = require('../models/User');
         const participant = await User.findById(req.user._id);
 
