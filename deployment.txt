@@ -1,0 +1,5 @@
+Felicity Event Management System — Deployment URLs
+
+Frontend (Vercel): [To be deployed]
+Backend (Render): [To be deployed]
+MongoDB: MongoDB Atlas
