@@ -12,6 +12,7 @@ const createTransporter = () => {
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
+    family: 4,
   });
 };
 
