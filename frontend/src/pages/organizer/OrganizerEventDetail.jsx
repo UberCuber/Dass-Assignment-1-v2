@@ -83,7 +83,13 @@ const OrganizerEventDetail = () => {
                     lastScanned = decodedText;
                     lastScanTime = now;
                     try {
-                        const res = await api.post(`/events/${id}/attendance`, { ticketId: decodedText.trim() });
+                        // QR encodes JSON {ticketId, eventId, ...} — extract ticketId
+                        let ticket = decodedText.trim();
+                        try {
+                            const parsed = JSON.parse(decodedText);
+                            if (parsed.ticketId) ticket = parsed.ticketId;
+                        } catch (e) { } // not JSON, use raw text
+                        const res = await api.post(`/events/${id}/attendance`, { ticketId: ticket });
                         toast.success(`${res.data.participant.firstName} ${res.data.participant.lastName} — Attendance marked!`);
                         fetchAll();
                     } catch (err) {
