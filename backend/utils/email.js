@@ -1,28 +1,31 @@
 const nodemailer = require('nodemailer');
 
 const createTransporter = () => {
-    return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 587,
-        secure: false,
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-        }
-    });
+  const port = parseInt(process.env.SMTP_PORT) || 465;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port,
+    secure: port === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+  });
 };
 
 const sendTicketEmail = async (to, ticketData) => {
-    try {
-        const transporter = createTransporter();
+  try {
+    const transporter = createTransporter();
 
-        const { eventName, participantName, ticketId, qrCode, eventDate, eventType } = ticketData;
+    const { eventName, participantName, ticketId, qrCode, eventDate, eventType } = ticketData;
 
-        const mailOptions = {
-            from: `"Felicity Events" <${process.env.SMTP_USER}>`,
-            to,
-            subject: `Your Ticket for ${eventName} - ${ticketId}`,
-            html: `
+    const mailOptions = {
+      from: `"Felicity Events" <${process.env.SMTP_USER}>`,
+      to,
+      subject: `Your Ticket for ${eventName} - ${ticketId}`,
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
           <div style="background: white; border-radius: 8px; padding: 30px; text-align: center;">
             <h1 style="color: #667eea; margin-bottom: 5px;">🎉 Registration Confirmed!</h1>
@@ -48,28 +51,28 @@ const sendTicketEmail = async (to, ticketData) => {
           </div>
         </div>
       `
-        };
+    };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Ticket email sent:', info.messageId);
-        return info;
-    } catch (error) {
-        console.error('Email sending error:', error.message);
-        // Don't throw - email failure shouldn't block registration
-        return null;
-    }
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Ticket email sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Email sending error:', error.message);
+    // Don't throw - email failure shouldn't block registration
+    return null;
+  }
 };
 
 const sendCredentialsEmail = async (to, credentials) => {
-    try {
-        const transporter = createTransporter();
-        const { organizerName, email, password } = credentials;
+  try {
+    const transporter = createTransporter();
+    const { organizerName, email, password } = credentials;
 
-        const mailOptions = {
-            from: `"Felicity Admin" <${process.env.SMTP_USER}>`,
-            to,
-            subject: `Your Organizer Account Credentials - Felicity`,
-            html: `
+    const mailOptions = {
+      from: `"Felicity Admin" <${process.env.SMTP_USER}>`,
+      to,
+      subject: `Your Organizer Account Credentials - Felicity`,
+      html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2>Welcome to Felicity, ${organizerName}!</h2>
           <p>Your organizer account has been created. Here are your login credentials:</p>
@@ -80,14 +83,14 @@ const sendCredentialsEmail = async (to, credentials) => {
           <p style="color: #e74c3c;">Please change your password after your first login.</p>
         </div>
       `
-        };
+    };
 
-        const info = await transporter.sendMail(mailOptions);
-        return info;
-    } catch (error) {
-        console.error('Credentials email error:', error.message);
-        return null;
-    }
+    const info = await transporter.sendMail(mailOptions);
+    return info;
+  } catch (error) {
+    console.error('Credentials email error:', error.message);
+    return null;
+  }
 };
 
 module.exports = { sendTicketEmail, sendCredentialsEmail };
