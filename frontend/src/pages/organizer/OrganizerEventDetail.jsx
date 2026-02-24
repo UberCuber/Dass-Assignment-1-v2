@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { FiUsers, FiDollarSign, FiDownload, FiCheck, FiX, FiCamera } from 'react-icons/fi';
+import DiscussionForum from '../../components/DiscussionForum';
 import '../Pages.css';
 
 const OrganizerEventDetail = () => {
@@ -87,7 +88,7 @@ const OrganizerEventDetail = () => {
             </div>
 
             <div className="tabs">
-                {['overview', 'participants', 'payments', 'attendance'].map(tab => (
+                {['overview', 'participants', 'payments', 'attendance', 'discussion'].map(tab => (
                     <button key={tab} className={`tab ${activeTab === tab ? 'tab-active' : ''}`} onClick={() => setActiveTab(tab)}>
                         {tab.charAt(0).toUpperCase() + tab.slice(1)}
                         {tab === 'payments' && pendingPayments.length > 0 && <span className="tab-count tab-alert">{pendingPayments.length}</span>}
@@ -195,6 +196,10 @@ const OrganizerEventDetail = () => {
                         </div>
                     )}
                 </div>
+            )}
+
+            {activeTab === 'discussion' && (
+                <DiscussionForum eventId={id} />
             )}
         </div>
     );

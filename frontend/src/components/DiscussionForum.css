@@ -1,19 +1,45 @@
 .forum-container {
     display: flex;
     flex-direction: column;
-    max-height: 480px;
+    max-height: 600px;
 }
 
-.forum-container h3 {
+.forum-header {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: space-between;
     margin-bottom: 0.75rem;
 }
 
+.forum-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+}
+
+.forum-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.unread-badge {
+    background: #111;
+    color: #fff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.notifications-off {
+    opacity: 0.4;
+}
+
 .connection-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: #ccc;
     display: inline-block;
@@ -32,14 +58,17 @@
 }
 
 .pinned-section h4 {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #f57f17;
     margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .pinned-msg {
     color: #555;
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     padding: 0.2rem 0;
 }
 
@@ -48,16 +77,33 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.15rem;
     padding: 0.4rem 0;
-    max-height: 320px;
+    max-height: 400px;
+}
+
+/* Message thread grouping */
+.message-thread {
+    margin-bottom: 0.25rem;
+}
+
+.thread-replies {
+    margin-left: 1.5rem;
+    border-left: 2px solid #e0e0e0;
+    padding-left: 0.75rem;
 }
 
 .message {
     background: #fafafa;
     border-radius: 6px;
-    padding: 0.6rem;
+    padding: 0.6rem 0.75rem;
     border: 1px solid #f0f0f0;
+}
+
+.message-reply {
+    background: #fff;
+    border-color: #e8e8e8;
+    margin-top: 0.25rem;
 }
 
 .message-announcement {
@@ -73,8 +119,8 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.78rem;
-    margin-bottom: 0.2rem;
+    font-size: 0.82rem;
+    margin-bottom: 0.25rem;
 }
 
 .author {
@@ -86,50 +132,112 @@
     color: #1a73e8;
 }
 
+.organizer-tag {
+    background: #e8f4fd;
+    color: #1a73e8;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-left: 0.2rem;
+}
+
+.announcement-tag {
+    background: #e8f4fd;
+    color: #1565c0;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .message-time {
     color: #999;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
 }
 
 .message-actions {
     margin-left: auto;
     display: flex;
-    gap: 0.2rem;
+    gap: 0.15rem;
 }
 
 .msg-action-btn {
     background: none;
     border: none;
-    color: #999;
+    color: #aaa;
     cursor: pointer;
-    padding: 0.15rem;
-    font-size: 0.78rem;
+    padding: 0.2rem;
+    font-size: 0.82rem;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
 }
 
 .msg-action-btn:hover {
     color: #111;
+    background: #f0f0f0;
+}
+
+.reply-context {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 0.2rem;
+    font-style: italic;
 }
 
 .message-content {
-    color: #444;
-    font-size: 0.85rem;
+    color: #333;
+    font-size: 0.9rem;
     margin: 0;
+    line-height: 1.45;
+}
+
+/* Emoji picker */
+.emoji-picker {
+    display: flex;
+    gap: 0.2rem;
+    padding: 0.4rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-top: 0.3rem;
+    flex-wrap: wrap;
+}
+
+.emoji-option {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.2rem 0.35rem;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+
+.emoji-option:hover {
+    background: #f0f0f0;
 }
 
 .message-reactions {
     display: flex;
     gap: 0.25rem;
     margin-top: 0.3rem;
+    flex-wrap: wrap;
 }
 
 .reaction-btn {
     background: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.72rem;
+    border-radius: 12px;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.78rem;
     cursor: pointer;
-    color: #666;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
     transition: all 0.15s;
 }
 
@@ -142,22 +250,43 @@
     border-color: #111;
 }
 
+/* Reply indicator */
+.reply-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    background: #f5f5f5;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #e0e0e0;
+    border-bottom: none;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.reply-indicator span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Input bar */
 .message-input-bar {
     display: flex;
     gap: 0.4rem;
-    margin-top: 0.6rem;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 0.6rem;
+    margin-top: 0.5rem;
+    align-items: center;
 }
 
 .message-input {
     flex: 1;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.75rem;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
     color: #111;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     outline: none;
 }
 
@@ -167,5 +296,26 @@
 
 .btn-send {
     border-radius: 6px;
-    padding: 0.5rem 0.65rem;
+    padding: 0.55rem 0.7rem;
+}
+
+/* Announcement toggle */
+.announcement-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.announcement-toggle input {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.announcement-label {
+    font-size: 0.78rem;
+    color: #888;
+    font-weight: 500;
 }
