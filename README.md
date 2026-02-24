@@ -1,10 +1,10 @@
-# 🎪 Felicity — Event Management System
+# Felicity — Event Management System
 
 A comprehensive **MERN stack** event management system for IIIT Hyderabad's annual tech fest. Manage events, registrations, QR-based attendance, merchandise sales, and real-time discussions — all from one platform.
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [Architecture](#architecture)
 - [Libraries & Frameworks](#libraries--frameworks)
@@ -16,7 +16,7 @@ A comprehensive **MERN stack** event management system for IIIT Hyderabad's annu
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌──────────────┐     REST API      ┌──────────────┐     ┌──────────────┐
@@ -33,7 +33,7 @@ A comprehensive **MERN stack** event management system for IIIT Hyderabad's annu
 
 ---
 
-## 🛠️ Libraries & Frameworks
+## Libraries & Frameworks
 
 ### Frontend Dependencies & Justification
 No external UI component libraries (like Material-UI or Tailwind CSS) were used. The entire UI was built using **Vanilla CSS** to demonstrate strong foundational styling skills and ensure complete control over the application's unique glassmorphism and modern aesthetic without bloat.
@@ -66,7 +66,7 @@ No external UI component libraries (like Material-UI or Tailwind CSS) were used.
 
 ---
 
-## 🚀 Advanced Features
+## Advanced Features
 
 ### Tier A: Merchandise Payment Approval Workflow (8 Marks)
 **Feature Selected:** The system handles end-to-end merchandise sales, requiring participants to upload an image proof of payment before securing their order. Organizers manually review these proofs before stock is decremented and QR tickets are generated.
@@ -109,7 +109,7 @@ No external UI component libraries (like Material-UI or Tailwind CSS) were used.
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 #### User Roles
 - **Participant (IIIT/Non-IIIT)**: Browse events, register, manage profile, view tickets.
@@ -128,7 +128,7 @@ No external UI component libraries (like Material-UI or Tailwind CSS) were used.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - **Node.js** 18+
@@ -215,7 +215,7 @@ Navigate to `http://localhost:5173` and login with the seeded admin account to b
 
 ---
 
-## 📡 API Documentation
+## API Documentation
 (Note: Standard CRUD routes omitted for brevity. See source files for payload structures).
 
 - **Auth**: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`
