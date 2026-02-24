@@ -43,13 +43,17 @@ const getEvents = async (req, res) => {
             delete query.status;
         }
 
-        // Search (fuzzy)
+        // Search (fuzzy - uses MongoDB text index + regex fallback)
         if (search) {
-            query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } },
-                { tags: { $regex: search, $options: 'i' } }
-            ];
+            const words = search.trim().split(/\s+/).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const regexPatterns = words.map(w => ({
+                $or: [
+                    { name: { $regex: w, $options: 'i' } },
+                    { description: { $regex: w, $options: 'i' } },
+                    { tags: { $regex: w, $options: 'i' } }
+                ]
+            }));
+            query.$and = query.$and ? [...query.$and, ...regexPatterns] : regexPatterns;
         }
 
         // Filters

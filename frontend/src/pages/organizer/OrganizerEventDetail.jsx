@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
-import { FiUsers, FiDollarSign, FiDownload, FiCheck, FiX, FiCamera } from 'react-icons/fi';
+import { FiUsers, FiDollarSign, FiDownload, FiCheck, FiX, FiCamera, FiVideo, FiVideoOff } from 'react-icons/fi';
 import DiscussionForum from '../../components/DiscussionForum';
 import '../Pages.css';
 
@@ -15,6 +15,9 @@ const OrganizerEventDetail = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(true);
     const [scanInput, setScanInput] = useState('');
+    const [cameraActive, setCameraActive] = useState(false);
+    const scannerRef = useRef(null);
+    const scannerDivRef = useRef(null);
 
     useEffect(() => { fetchAll(); }, [id]);
 
@@ -59,6 +62,49 @@ const OrganizerEventDetail = () => {
             fetchAll();
         } catch (err) { toast.error(err.response?.data?.message || 'Invalid ticket'); }
     };
+
+    const startCamera = async () => {
+        try {
+            const { Html5Qrcode } = await import('html5-qrcode');
+            const scanner = new Html5Qrcode('qr-reader');
+            scannerRef.current = scanner;
+            await scanner.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                async (decodedText) => {
+                    // Auto-submit scanned ticket
+                    try {
+                        const res = await api.post(`/events/${id}/attendance`, { ticketId: decodedText.trim() });
+                        toast.success(`${res.data.participant.firstName} ${res.data.participant.lastName} — Attendance marked!`);
+                        fetchAll();
+                    } catch (err) {
+                        toast.error(err.response?.data?.message || 'Invalid ticket');
+                    }
+                },
+                () => { } // ignore scan failures
+            );
+            setCameraActive(true);
+        } catch (err) {
+            toast.error('Could not access camera: ' + (err.message || err));
+            setCameraActive(false);
+        }
+    };
+
+    const stopCamera = async () => {
+        try {
+            if (scannerRef.current) {
+                await scannerRef.current.stop();
+                scannerRef.current.clear();
+                scannerRef.current = null;
+            }
+        } catch (e) { }
+        setCameraActive(false);
+    };
+
+    // Cleanup camera on tab change or unmount
+    useEffect(() => {
+        return () => { stopCamera(); };
+    }, [activeTab]);
 
     const exportCSV = () => {
         window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/events/${id}/export?token=${localStorage.getItem('token')}`, '_blank');
@@ -162,12 +208,17 @@ const OrganizerEventDetail = () => {
                 <div className="detail-card">
                     <h3><FiCamera /> QR Scanner & Attendance</h3>
                     <div className="scanner-section">
-                        <div className="form-row">
+                        <div className="form-row" style={{ alignItems: 'center' }}>
                             <input value={scanInput} onChange={e => setScanInput(e.target.value)}
                                 placeholder="Enter or scan Ticket ID (e.g., FEL-ABCD1234)"
                                 className="scan-input" onKeyDown={e => e.key === 'Enter' && handleScan()} />
                             <button className="btn btn-primary" onClick={handleScan}>Mark Attendance</button>
+                            <button className={`btn ${cameraActive ? 'btn-danger' : 'btn-outline'}`}
+                                onClick={cameraActive ? stopCamera : startCamera}>
+                                {cameraActive ? <><FiVideoOff /> Stop Camera</> : <><FiVideo /> Scan QR</>}
+                            </button>
                         </div>
+                        <div id="qr-reader" style={{ marginTop: cameraActive ? '1rem' : 0, maxWidth: '400px', display: cameraActive ? 'block' : 'none' }}></div>
                     </div>
 
                     {attendance && (
