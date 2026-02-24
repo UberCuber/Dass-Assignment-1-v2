@@ -4,6 +4,7 @@ import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { FiUsers, FiDollarSign, FiDownload, FiCheck, FiX, FiCamera, FiVideo, FiVideoOff } from 'react-icons/fi';
 import DiscussionForum from '../../components/DiscussionForum';
+import { Html5Qrcode } from 'html5-qrcode';
 import '../Pages.css';
 
 const OrganizerEventDetail = () => {
@@ -68,7 +69,6 @@ const OrganizerEventDetail = () => {
         // Small delay to let React render the visible div first
         await new Promise(r => setTimeout(r, 100));
         try {
-            const { Html5Qrcode } = await import('html5-qrcode');
             const scanner = new Html5Qrcode('qr-reader');
             scannerRef.current = scanner;
             let lastScanned = '';
