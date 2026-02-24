@@ -1,34 +1,34 @@
-// Email utility - uses Resend API (HTTP-based, works on Render free tier)
+// Email utility - uses Brevo HTTP API (works on Render free tier)
 // Falls back to Nodemailer SMTP for local development
 
 const sendEmail = async (to, subject, html) => {
-  // Try Resend API first (works on Render)
-  if (process.env.RESEND_API_KEY) {
+  // Brevo HTTP API (works on Render, no domain verification needed)
+  if (process.env.BREVO_API_KEY) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'api-key': process.env.BREVO_API_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.RESEND_FROM || 'Felicity Events <onboarding@resend.dev>',
-          to: [to],
+          sender: { name: 'Felicity Events', email: process.env.BREVO_SENDER || process.env.SMTP_USER || 'noreply@felicity.org' },
+          to: [{ email: to }],
           subject,
-          html,
+          htmlContent: html,
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Resend API error');
-      console.log('Email sent via Resend:', data.id);
+      if (!res.ok) throw new Error(data.message || JSON.stringify(data));
+      console.log('Email sent via Brevo:', data.messageId);
       return data;
     } catch (error) {
-      console.error('Resend email error:', error.message);
+      console.error('Brevo email error:', error.message);
       return null;
     }
   }
 
-  // Fallback to Nodemailer SMTP (works locally)
+  // Fallback: Nodemailer SMTP (works locally with Gmail)
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
     try {
       const nodemailer = require('nodemailer');
@@ -52,7 +52,7 @@ const sendEmail = async (to, subject, html) => {
     }
   }
 
-  console.log('No email provider configured (set RESEND_API_KEY or SMTP_USER/SMTP_PASS)');
+  console.log('No email provider configured (set BREVO_API_KEY or SMTP_USER/SMTP_PASS)');
   return null;
 };
 
