@@ -22,6 +22,30 @@ const EventDetails = () => {
     const [feedback, setFeedback] = useState({ rating: 5, comment: '' });
     const [feedbackData, setFeedbackData] = useState(null);
 
+    // Calculate total amount for merchandise
+    const calculateTotal = () => {
+        let total = event?.registrationFee || 0;
+        if (event?.type === 'merchandise') {
+            merchSelections.forEach(selection => {
+                total += selection.price * selection.quantity;
+            });
+        }
+        return total;
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('File size must be under 5MB');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => setPaymentProof(reader.result);
+            reader.readAsDataURL(file);
+        }
+    };
+
     useEffect(() => {
         fetchEvent();
         checkExistingRegistration();
@@ -80,6 +104,10 @@ const EventDetails = () => {
             }
             if (event.type === 'merchandise') {
                 data.merchandiseSelections = merchSelections;
+                if (calculateTotal() > 0) {
+                    if (!paymentProof) throw new Error('Payment proof is required for this purchase');
+                    data.paymentProof = paymentProof;
+                }
             }
 
             const res = await api.post(`/events/${id}/register`, data);
@@ -313,6 +341,27 @@ const EventDetails = () => {
                                 </div>
                             </div>
                         ))}
+
+                        {event.type === 'merchandise' && calculateTotal() > 0 && (
+                            <div className="payment-proof-section">
+                                <div className="total-amount-display">
+                                    <strong>Total Amount to Pay: ₹{calculateTotal()}</strong>
+                                </div>
+                                <div className="payment-instructions">
+                                    <p>Please pay <strong>₹{calculateTotal()}</strong> to the following UPI ID and upload the screenshot.</p>
+                                    <p className="upi-id">felicity-events@upi</p>
+                                </div>
+                                <div className="form-group">
+                                    <label>Upload Payment Proof (Image) <span className="required">*</span></label>
+                                    <input type="file" accept="image/*" onChange={handleFileChange} required />
+                                    {paymentProof && (
+                                        <div className="payment-preview">
+                                            <img src={paymentProof} alt="Preview" style={{ maxWidth: '100px', marginTop: '10px', borderRadius: '4px' }} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="modal-actions">
                             <button className="btn btn-outline" onClick={() => setShowRegForm(false)}>Cancel</button>

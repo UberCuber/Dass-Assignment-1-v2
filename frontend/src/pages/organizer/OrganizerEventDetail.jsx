@@ -206,7 +206,12 @@ const OrganizerEventDetail = () => {
                                 <div className="payment-info">
                                     <h4>{r.participant?.firstName} {r.participant?.lastName}</h4>
                                     <p>{r.participant?.email} • ₹{r.totalAmount}</p>
-                                    {r.paymentProof && <img src={`http://localhost:5000/${r.paymentProof}`} alt="Payment proof" className="payment-proof-img" />}
+                                    {r.paymentProof && (
+                                        <div className="payment-proof-container">
+                                            <p className="small text-muted">Uploaded Payment Proof:</p>
+                                            <img src={r.paymentProof} alt="Payment proof" className="payment-proof-img" style={{ maxWidth: '200px', borderRadius: '4px', border: '1px solid #eee' }} />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="payment-actions">
                                     <button className="btn btn-sm btn-success" onClick={() => handlePaymentReview(r._id, 'approve')}><FiCheck /> Approve</button>
