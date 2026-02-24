@@ -86,7 +86,7 @@ const CreateEvent = () => {
     return (
         <div className="page-container">
             <div className="page-header">
-                <h1>Create Event ✨</h1>
+                <h1>Create Event</h1>
                 <div className="step-indicator">
                     <div className={`step-dot ${step >= 1 ? 'active' : ''}`}>1</div>
                     <div className="step-line"></div>
@@ -134,7 +134,7 @@ const CreateEvent = () => {
                         <div className="form-group"><label>Tags (comma-separated)</label>
                             <input value={event.tags} onChange={e => setEvent({ ...event, tags: e.target.value })} placeholder="tech, hackathon, ai" /></div>
                     </div>
-                    <button className="btn btn-primary" onClick={() => setStep(2)}>Next →</button>
+                    <button className="btn btn-primary" onClick={() => setStep(2)}>Next &rarr;</button>
                 </div>
             )}
 
@@ -217,8 +217,8 @@ const CreateEvent = () => {
                         </>
                     )}
                     <div className="form-row" style={{ marginTop: '1rem' }}>
-                        <button className="btn btn-outline" onClick={() => setStep(1)}>← Back</button>
-                        <button className="btn btn-primary" onClick={() => setStep(3)}>Next →</button>
+                        <button className="btn btn-outline" onClick={() => setStep(1)}>&larr; Back</button>
+                        <button className="btn btn-primary" onClick={() => setStep(3)}>Next &rarr;</button>
                     </div>
                 </div>
             )}
@@ -239,10 +239,10 @@ const CreateEvent = () => {
                         {event.type === 'merchandise' && <p><strong>Items:</strong> {event.merchandiseItems.length}</p>}
                     </div>
                     <div className="form-row" style={{ marginTop: '1rem' }}>
-                        <button className="btn btn-outline" onClick={() => setStep(2)}>← Back</button>
+                        <button className="btn btn-outline" onClick={() => setStep(2)}>&larr; Back</button>
                         <button className="btn btn-outline" onClick={() => handleSave(false)} disabled={saving}>Save as Draft</button>
                         <button className="btn btn-primary" onClick={() => handleSave(true)} disabled={saving}>
-                            {saving ? 'Publishing...' : '🚀 Publish Event'}
+                            {saving ? 'Publishing...' : 'Publish Event'}
                         </button>
                     </div>
                 </div>

@@ -68,7 +68,7 @@ const Onboarding = () => {
             </div>
             <div className="auth-card auth-card-wide">
                 <div className="auth-header">
-                    <span className="auth-logo">✨</span>
+                    <span className="auth-logo"></span>
                     <h1>{step === 1 ? 'What interests you?' : 'Follow Clubs'}</h1>
                     <p>{step === 1 ? 'Select your areas of interest' : 'Follow clubs to get updates'}</p>
                     <div className="step-indicator">
