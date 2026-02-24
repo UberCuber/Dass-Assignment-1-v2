@@ -64,15 +64,24 @@ const OrganizerEventDetail = () => {
     };
 
     const startCamera = async () => {
+        setCameraActive(true);
+        // Small delay to let React render the visible div first
+        await new Promise(r => setTimeout(r, 100));
         try {
             const { Html5Qrcode } = await import('html5-qrcode');
             const scanner = new Html5Qrcode('qr-reader');
             scannerRef.current = scanner;
+            let lastScanned = '';
+            let lastScanTime = 0;
             await scanner.start(
                 { facingMode: 'environment' },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 async (decodedText) => {
-                    // Auto-submit scanned ticket
+                    const now = Date.now();
+                    // Debounce: ignore same QR within 5 seconds
+                    if (decodedText === lastScanned && now - lastScanTime < 5000) return;
+                    lastScanned = decodedText;
+                    lastScanTime = now;
                     try {
                         const res = await api.post(`/events/${id}/attendance`, { ticketId: decodedText.trim() });
                         toast.success(`${res.data.participant.firstName} ${res.data.participant.lastName} — Attendance marked!`);
@@ -83,7 +92,6 @@ const OrganizerEventDetail = () => {
                 },
                 () => { } // ignore scan failures
             );
-            setCameraActive(true);
         } catch (err) {
             toast.error('Could not access camera: ' + (err.message || err));
             setCameraActive(false);
@@ -94,7 +102,7 @@ const OrganizerEventDetail = () => {
         try {
             if (scannerRef.current) {
                 await scannerRef.current.stop();
-                scannerRef.current.clear();
+                try { scannerRef.current.clear(); } catch (e) { }
                 scannerRef.current = null;
             }
         } catch (e) { }
@@ -218,7 +226,7 @@ const OrganizerEventDetail = () => {
                                 {cameraActive ? <><FiVideoOff /> Stop Camera</> : <><FiVideo /> Scan QR</>}
                             </button>
                         </div>
-                        <div id="qr-reader" style={{ marginTop: cameraActive ? '1rem' : 0, maxWidth: '400px', display: cameraActive ? 'block' : 'none' }}></div>
+                        {cameraActive && <div id="qr-reader" style={{ marginTop: '1rem', maxWidth: '400px', width: '100%' }}></div>}
                     </div>
 
                     {attendance && (
