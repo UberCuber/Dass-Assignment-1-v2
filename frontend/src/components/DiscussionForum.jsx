@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import { FiSend, FiBookmark, FiTrash2, FiSmile, FiCornerDownRight, FiX, FiBell, FiBellOff } from 'react-icons/fi';
 import './DiscussionForum.css';
 
@@ -21,7 +22,12 @@ const DiscussionForum = ({ eventId }) => {
     const [isAnnouncement, setIsAnnouncement] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [unreadCount, setUnreadCount] = useState(0);
-    const isVisibleRef = useRef(true);
+    const notificationsRef = useRef(true);
+    const userRef = useRef(user);
+
+    // Keep refs in sync with state
+    useEffect(() => { notificationsRef.current = notificationsEnabled; }, [notificationsEnabled]);
+    useEffect(() => { userRef.current = user; }, [user]);
 
     useEffect(() => {
         // Fetch existing messages
@@ -46,15 +52,23 @@ const DiscussionForum = ({ eventId }) => {
         s.on('new-message', (msg) => {
             setMessages(prev => [...prev, msg]);
             // Send notification if message is from someone else
-            if (msg.author?._id !== user?._id) {
+            if (msg.author?._id !== userRef.current?._id) {
                 setUnreadCount(prev => prev + 1);
-                if (notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
-                    const authorName = msg.author?.organizerName || `${msg.author?.firstName || ''} ${msg.author?.lastName || ''}`.trim();
-                    const title = msg.isAnnouncement ? `Announcement from ${authorName}` : `New message from ${authorName}`;
-                    new Notification(title, {
-                        body: msg.content.substring(0, 100),
-                        tag: `forum-${eventId}-${msg._id}`,
-                    });
+                const authorName = msg.author?.organizerName || `${msg.author?.firstName || ''} ${msg.author?.lastName || ''}`.trim();
+
+                if (notificationsRef.current) {
+                    // In-app toast notification (always works)
+                    const label = msg.isAnnouncement ? `Announcement from ${authorName}` : `${authorName}`;
+                    toast.info(`${label}: ${msg.content.substring(0, 80)}`, { autoClose: 4000 });
+
+                    // Browser notification (if permitted, works when tab is in background)
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        const title = msg.isAnnouncement ? `Announcement from ${authorName}` : `New message from ${authorName}`;
+                        new Notification(title, {
+                            body: msg.content.substring(0, 100),
+                            tag: `forum-${eventId}-${msg._id}`,
+                        });
+                    }
                 }
             }
         });
